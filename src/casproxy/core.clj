@@ -25,6 +25,9 @@
 (defn login-url [] (config :login-url ))
 (defn username  [] (config :username))
 (defn password  [] (config :password))
+(defn scheme [] (config :scheme))
+(defn server-name [] (config :server-name))
+(defn server-port [] (config :server-port))
 
 ;; clj-http.client function wrappers.
 ;; concentrate calls here so http client calls are not strewn over the file.
@@ -91,9 +94,9 @@
 (defn create-proxy-request [req]
   "turn request into a request to the real server"
   (assoc req
-    :scheme :https
-    :server-name "itbi-uat.colo.elex.be"
-    :server-port 8443
+    :scheme (scheme)
+    :server-name (server-name)
+    :server-port (server-port)
     :headers (dissoc (:headers req) "content-length" "host")))
 
 (defn handler [req]
@@ -105,7 +108,7 @@
       resp)))
 
 (defn run-server []
-  (run-jetty handler {:port 3000}))
+  (run-jetty handler {:port 3000 :host "localhost"}))
 
 (defn -main [& args]
   (run-server))

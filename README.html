@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>README.html</title>
+
+</head>
+
+<body>
+
+<h1>casproxy</h1>
+
+<h2>Overview</h2>
+
+<p>Currently the Talend workbench cannot connect to a CAS protected
+SpagoBI Server. This program creates a local proxy server on
+localhost:3000 which routes the requests to the real server.</p>
+
+<h2>Principle</h2>
+
+<p>The app starts a webserver which transparently forwards the requests
+to the remote SpagoBI server. The app which needs access to the
+SpagoBI is configured to connect to localhost:3000.</p>
+
+<p>When the response indicates a redirect to the CAS server to login, the
+login form is filled in with the username and password of the user to
+connect as, and the redirect back to the SpagoBI server is
+followed. The calling application is unaware of the login procedure.</p>
+
+<h2>Configuration</h2>
+
+<p>Copy the <em>casproxy.properties</em> template to <em>~/.casproxy.properties</em>.</p>
+
+<pre><code>cp casproxy.properties ~/.casproxy.properties
+chmod 0600 ~/.casproxy.properties
+vi ~/.casproxy.properties
+</code></pre>
+
+<h3>login-url</h3>
+
+<p>This parameter is matched to detect the redirect to the CAS
+server. Best is to copy this from the browser location bar when
+logging in. Use the part before the '?' as a good prefix to detect the
+login redirection.</p>
+
+<h3>username and password</h3>
+
+<p>These parameters are filled in in the CAS login forms.</p>
+
+<h3>scheme</h3>
+
+<p>This is the scheme, either <em>http</em> or <em>https</em>, to connect to the
+SpagoBI server. This may or may not be the same as for the CAS server.</p>
+
+<h3>server-name and server-port</h3>
+
+<p>This is the fully qualified SpagoBI server-name and the port number to
+connect to.</p>
+
+<h2>Application Configuration</h2>
+
+<p>Configure the application to use http://localhost:3000 as the protocol/server/port combination.</p>
+
+<p><img src="app-config.png" alt="Example configuration for Talend" title="" /></p>
+
+<p>The username and password are ignored AFAICT, since the values from the config file will be used.</p>
+
+</body>
+</html>
