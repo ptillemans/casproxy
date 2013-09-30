@@ -75,13 +75,10 @@
     (let [login-page (c-get url)
           orig-form  (get-form-params login-page)
           filled-form (assoc orig-form "username" (username) "password" (password))]
-      (pprint "  Submitting Form:")  ; (pprint filled-form)
+      (pprint "  Submitting Form:")
       (let [resp  (c-post url filled-form)]
-        ;(pprint resp)
         (pprint "  Following to payload.")
-        (let [resp (c-get ((resp :headers) "location"))]
-          ;(pprint resp)
-          resp)))))
+        (c-get ((resp :headers) "location"))))))
 
 
 (defn do-request [req]

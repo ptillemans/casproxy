@@ -58,6 +58,25 @@ protocol/server/port combination.
 The username and password are ignored AFAICT, since the values from
 the config file will be used.
 
+When deploying a job to the SpagoBI server from the Talend Workbench
+you'll see the following output if everything is ok.
+
+    casproxy git:(master) ✗ lein run
+    2013-09-30 00:46:33.120:INFO:oejs.Server:jetty-7.6.8.v20121106
+    2013-09-30 00:46:33.150:INFO:oejs.AbstractConnector:Started SelectChannelConnector@localhost:3000
+    "Starting request : /SpagoBITalendEngine/EngineInfoService"
+    " Status: 302"
+    "Logging in to CAS\n"
+    "  Submitting Form:"
+    "  Following to payload."
+    "Starting request : /SpagoBITalendEngine/EngineInfoService"
+    " Status: 200"
+    "Starting request : /SpagoBITalendEngine/EngineInfoService"
+    " Status: 200"
+    "Starting request : /SpagoBITalendEngine/JobUploadService"
+    " Status: 200"
+
+
 ## Notes
 
 ### Generic CAS proxying.
