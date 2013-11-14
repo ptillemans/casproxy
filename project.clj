@@ -14,4 +14,5 @@
                  [ring/ring-core "1.2.0"]
                  [ring/ring-jetty-adapter "1.2.0"]
                  [enlive "1.1.4"]]
+  :plugins [ [quickie "0.2.4"] ]
   :main casproxy.core)

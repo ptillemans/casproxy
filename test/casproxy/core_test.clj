@@ -3,8 +3,10 @@
             [casproxy.core :refer :all]
             [clj-http.client :as client] )
   (:use [ring.adapter.jetty :only (run-jetty)]
-        [ring.middleware.resource]
-        [ring.middleware.cookies]))
+        [ring.middleware.session]
+        [ring.middleware.cookies]
+        [ring.middleware.params]
+        [ring.util.response]))
 
 ;
 ; Testing the parsing of the login page uses a static file
@@ -14,15 +16,28 @@
 ; and then exposing it using a temporary test server
 (def cas-login-url "http://localhost:13000/login")
 
-
-(defn cas-handler[request]
-  {:status 200
-   :headers {"Content-Type" "text/plain"}
-   :body "Dummmy1"})
-
+(defn cas-handler[{method :request-method _session :session params :params}]
+  "Simulate the interaction with the CAS server.
+  On a get request we present a copy of the CAS login page which was snarfed with curl.
+  On a post we redirect to the service passed as a parameter."
+  (let [session (or _session {})
+        service (or 
+                  (params "service") 
+                  (session :service))]
+    (println "Service: " service)
+    (println "Session: " session)
+    (if (= :post method)
+      (redirect-after-post service)
+      (-> (resource-response "/public/login")
+          (assoc :session 
+                 (assoc session 
+                   :service service))))))     ; store the location given in the get 
 
 (defn create-test-cas-server []
-  (let [app (-> cas-handler (wrap-cookies))]
+  (let [app (-> cas-handler 
+                (wrap-cookies)
+                (wrap-params)
+                (wrap-session))]
     (run-jetty app {:host "localhost" :port 13000 :join? false}))) 
 
 (defn ring-fixture [f]
