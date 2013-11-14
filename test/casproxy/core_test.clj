@@ -3,7 +3,8 @@
             [casproxy.core :refer :all]
             [clj-http.client :as client] )
   (:use [ring.adapter.jetty :only (run-jetty)]
-        [ring.middleware.resource]))
+        [ring.middleware.resource]
+        [ring.middleware.cookies]))
 
 ;
 ; Testing the parsing of the login page uses a static file
@@ -14,17 +15,18 @@
 (def cas-login-url "http://localhost:13000/login")
 
 
-(defn dummy-handler[request]
+(defn cas-handler[request]
   {:status 200
    :headers {"Content-Type" "text/plain"}
    :body "Dummmy1"})
 
 
-(defn create-test-server []
-  (let [app (wrap-resource dummy-handler "public")]
+(defn create-test-cas-server []
+  (let [app (-> cas-handler (wrap-cookies))]
     (run-jetty app {:host "localhost" :port 13000 :join? false}))) 
+
 (defn ring-fixture [f]
-  (let [server (create-test-server)]
+  (let [server (create-test-cas-server)]
     (f)
     (.stop server)))
 
