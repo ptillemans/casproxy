@@ -108,3 +108,7 @@ username/password to connect to the CAS server in a transparent way.
 This is straightforward to do for the single user case, however in the
 multiuser case, the current single cookie-store must be changed. Every
 account should have their own cookie-store.
+
+There is also some big issues with storing passwords needed to 
+authenticate to the CAS server.
+
