@@ -16,4 +16,5 @@
                  [enlive "1.1.4"]]
   :plugins [[quickie "0.2.4"]
             [lein-marginalia "0.7.1"]]
-  :main casproxy.core)
+  :profiles {:uberjar {:aot :all
+                       :main casproxy.core}})
