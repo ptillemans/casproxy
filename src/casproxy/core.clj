@@ -51,12 +51,13 @@
 
 (defn get-redirected-url [resp]
   "return the url of the page which was returned in the redirects"
-  ((:headers resp) "location")
+  (last (:trace-redirects resp))
 )
 
 (defn is-login-url? [resp]
   "Return true when the CAS login page is returned"
-  (.startsWith (get-redirected-url resp) (login-url)))
+  (let [redirect (get-redirected-url resp)]
+    (and redirect (.startsWith redirect (login-url)))))
 
 
 (defn get-form-params [resp]
@@ -99,8 +100,8 @@
 (defn handler [req]
   (let [resp (do-request (create-proxy-request req))
         status (:status resp)]
-    ;(pprint resp)
-    (if (and (= status 302) (is-login-url? resp))
+;    (pprint resp)
+    (if (and (is-login-url? resp))
       (login resp)
       resp)))
 
