@@ -37,14 +37,15 @@
 (def cookie-store (clj-http.cookies/cookie-store))
 
 (defn c-get [url]
-  (client/get url {:cookie-store cookie-store}))
+  (client/get url {:cookie-store cookie-store :throw-exceptions false}))
 
 (defn c-post [url form-params]
   (client/post url {:form-params form-params
-                    :cookie-store cookie-store}))
+                    :cookie-store cookie-store
+                    :throw-exceptions false}))
 
 (defn c-req [req]
-  (client/request (assoc req :cookie-store cookie-store)))
+  (client/request (assoc req :cookie-store cookie-store :throw-exceptions false)))
 
 
 
