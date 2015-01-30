@@ -101,7 +101,7 @@
 (defn handler [req]
   (let [resp (do-request (create-proxy-request req))
         status (:status resp)]
-    (pprint (get-redirected-url))
+    (pprint (get-redirected-url resp))
     (if (and (is-login-url? resp))
       (login resp)
       resp)))
