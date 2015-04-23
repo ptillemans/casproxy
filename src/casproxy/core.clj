@@ -37,17 +37,21 @@
 (def cookie-store (clj-http.cookies/cookie-store))
 
 (defn c-get [url]
-  (client/get url {:cookie-store cookie-store :throw-exceptions false}))
+  (client/get url {:cookie-store cookie-store
+                   :force-redirects true
+                   :throw-exceptions false}))
 
 (defn c-post [url form-params]
   (client/post url {:form-params form-params
                     :cookie-store cookie-store
+                    :force-redirects true
                     :throw-exceptions false}))
 
 (defn c-req [req]
-  (client/request (assoc req :cookie-store cookie-store :throw-exceptions false)))
-
-
+  (client/request (assoc req
+                         :cookie-store cookie-store
+                         :throw-exceptions false
+                         :force-redirects true)))
 
 
 (defn get-redirected-url [resp]
@@ -59,7 +63,6 @@
   "Return true when the CAS login page is returned"
   (let [redirect (get-redirected-url resp)]
     (and redirect (.startsWith redirect (login-url)))))
-
 
 (defn get-form-params [resp]
   "Return a map with form fields name-value pairs from the page in the resp."
@@ -80,8 +83,7 @@
       (pprint "  Submitting Form:")
       (let [resp  (c-post url filled-form)]
         (pprint "  Following to payload.")
-        (c-get ((resp :headers) "location"))))))
-
+        (c-get (get-redirected-url resp))))))
 
 (defn do-request [req]
   (pprint (str "Starting request : " (req :uri)))
@@ -101,7 +103,7 @@
 (defn handler [req]
   (let [resp (do-request (create-proxy-request req))
         status (:status resp)]
-    (pprint (get-redirected-url resp))
+    (pprint (str "Redirect url: " (get-redirected-url resp)))
     (if (and (is-login-url? resp))
       (login resp)
       resp)))
