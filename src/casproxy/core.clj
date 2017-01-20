@@ -81,13 +81,17 @@
           orig-form  (get-form-params login-page)
           filled-form (assoc orig-form "username" (username) "password" (password))]
       (pprint "  Submitting Form:")
-      (let [resp  (c-post url filled-form)]
-        (pprint "  Following to payload.")
-        (c-get (get-redirected-url resp))))))
+      (let [resp  (c-post url filled-form)
+            url (get-redirected-url resp)]
+        (pprint (str "  Following to payload url: " url))
+        (let  [payload-response (c-get url)]
+          (pprint (str "  Status:" (:status payload-response)))
+          (pprint (str " Body: " (:body payload-response)))
+          payload-response
+          )))))
 
 (defn do-request [req]
   (pprint (str "Starting request : " (req :uri)))
-  ;(pprint req)
   (let [resp (c-req req )]
     (pprint (str " Status: " (:status resp)))
     resp))
@@ -95,20 +99,30 @@
 (defn create-proxy-request [req]
   "turn request into a request to the real server"
   (assoc req
-    :scheme (scheme)
-    :server-name (server-name)
-    :server-port (server-port)
-    :headers (dissoc (:headers req) "content-length" "host")))
+         :scheme (scheme)
+         :server-name (server-name)
+         :server-port (server-port)
+         :headers (dissoc (:headers req) "content-length" "host")))
+
+(defn slurp-bytes
+  "Slurp the bytes from a slurpable thing"
+  [x]
+  (with-open [out (java.io.ByteArrayOutputStream.)]
+    (clojure.java.io/copy (clojure.java.io/input-stream x) out)
+    (.toByteArray out)))
 
 (defn handler [req]
-  (let [resp (do-request (create-proxy-request req))
-        status (:status resp)]
-    (pprint (str "Redirect url: " (get-redirected-url resp)))
-    (if (and (is-login-url? resp))
-      (login resp)
-      resp)))
+  (let [body (slurp-bytes (:body req))]
+    (do-request (create-proxy-request (assoc req :body body)))))
 
 (defn run-server []
+  (let [spagobi-url (str (scheme) "://" (server-name) ":" (server-port) "/SpagoBITalendEngine/EngineInfoService")]
+    (pprint spagobi-url)
+    (let [resp (c-get spagobi-url)]
+      (pprint resp)
+      (if (is-login-url? resp)
+        (login resp)
+        resp)))
   (run-jetty handler {:port 3000 :host "localhost"}))
 
 (defn -main [& args]
