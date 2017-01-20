@@ -1,4 +1,4 @@
-(defproject casproxy "0.1.4"
+(defproject casproxy "0.1.5-SNAPSHOT"
   :description "Connect transparently to a CAS protected server through a local server."
   :url "https://github.com/ptillemans/casproxy"
   :license {:name "GNU Public License"
